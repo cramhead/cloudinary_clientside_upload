@@ -1,0 +1,25 @@
+<head>
+  <title>cloudinary_client_upload</title>
+
+  <script src='/js/jquery.ui.widget.js' type='text/javascript'></script>
+  <script src='/js/jquery.iframe-transport.js' type='text/javascript'></script>
+  <script src='/js/jquery.fileupload.js' type='text/javascript'></script>
+  <script src='/js/jquery.cloudinary.js' type='text/javascript'></script>
+</head>
+
+<body>
+  {{> fileUpload}}
+</body>
+
+<template name='fileUpload'>
+  <form class='upload_form'>
+    upload an image
+
+    <input name="file" type="file"
+   class="cloudinary-fileupload" data-cloudinary-field="discussionAddImageId">
+    <input type="hidden" class='image_public_id'>
+    <div class="progress_bar" style='background-color: red, height: 20px'>
+      <div class='thumbnails'></div>
+    </div>
+  </form>
+</template>
