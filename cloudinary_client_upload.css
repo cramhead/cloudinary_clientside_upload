@@ -4,3 +4,9 @@
   height: 20px;
   width:0
 }
+
+.progressAll {
+  background-color: black;
+  height: 2px;
+  width: 0;
+}

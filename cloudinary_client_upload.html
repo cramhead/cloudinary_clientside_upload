@@ -13,13 +13,11 @@
 
 <template name='fileUpload'>
   <form class='upload_form'>
+    <div class='progressAll'></div>
+
     upload an image
 
-    <input name="file" type="file"
-   class="cloudinary-fileupload" data-cloudinary-field="discussionAddImageId">
-    <input type="hidden" class='image_public_id'>
-    <div class="progress_bar" style='background-color: red, height: 20px'>
-      <div class='thumbnails'></div>
-    </div>
+    <input name="file" type="file" class="cloudinary-fileupload">
+    <div class='thumbnails'></div>
   </form>
 </template>

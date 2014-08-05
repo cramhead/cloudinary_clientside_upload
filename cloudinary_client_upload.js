@@ -1,11 +1,21 @@
 if (Meteor.isClient) {
-  var cloudName = 'XXXXXXXX';
+  var cloudName;
 
   Template.fileUpload.created = function () {
 
+    if(!Meteor.settings.public.cloudinary){
+      console.log("cloudinary settings needed");
+      return;
+    }
+    // alias the settings
+    var settings = Meteor.settings.public.cloudinary;
+
     $.cloudinary.config({
-      cloud_name: cloudName
+      cloud_name: settings.cloudName
     });
+
+    cloudName = settings.cloudName;
+
   };
 
   Template.fileUpload.rendered = function () {
@@ -63,25 +73,18 @@ if (Meteor.isClient) {
       var numFiles = data.files.length;
       for (var i = 0; i < numFiles; i++) {
         // get the name of the image
-        var previewImage = data.files[i].name;
-
-        // create a cloudinaryImage
-        var cloudinaryImage = $.cloudinary.image(data.result.public_id, {
+        var previewImageName = data.files[i].name;
+        var imageTransforms = {
           format: 'jpg',
           width: 150,
           height: 100,
           crop: 'thumb',
           gravity: 'face',
           effect: 'saturation:50'
-        });
-        //annotate it with the public_id
-        cloudinaryImage.attr("public_id", data.result.public_id);
-        // replace the preview with the cloudinary image
-        $("img[data-name='" + previewImage + "']").replaceWith(
-          cloudinaryImage);
-      }
+        };
 
-      //$('.image_public_id').val(data.result.public_id);
+        augmentPreview(previewImageName, data.result.public_id);
+      }
 
     }).bind('cloudinaryprogress', function (e, data) {
       console.log("data loaded is : " + data.loaded + " data size: " + data.total);
@@ -89,9 +92,35 @@ if (Meteor.isClient) {
       var currentFile = data.files[0].name;
       $('div.progress[data-progress="' + currentFile + '"]').css('width',
         Math.round((data.loaded * 100.0) / data.total) + '%');
-
-
+    }).bind('cloudinaryprogressall', function (e, data) {
+      var totalPercentage = Math.round((data.loaded * 100.0) / data.total);
+      $('div.progressAll').css('width', totalPercentage + '%');
     });
+  };
+
+  var augmentPreview = function (previewImageName, publicId, transforms) {
+    // if there are no transforms then just annotate, otherwise replace
+    if (typeof transforms === 'undefined') {
+      annotatePreview(previewImageName, publicId);
+    } else {
+      replacePreview(previewImageName, publicId, transforms);
+    }
+  };
+
+  var replacePreview = function (previewImageName, publicId, transforms) {
+    // create a cloudinaryImage
+    var cloudinaryImage = $.cloudinary.image(publicId, transforms);
+
+    //annotate it with the public_id
+    cloudinaryImage.attr("public_id", publicId);
+
+    // replace the preview with the cloudinary image
+    $("img[data-name='" + previewImageName + "']").replaceWith(
+      cloudinaryImage);
+  };
+
+  var annotatePreview = function (previewImageName, publicId) {
+    $("img[data-name='" + previewImageName + "']").attr("public_id", publicId);
   };
 
 };
